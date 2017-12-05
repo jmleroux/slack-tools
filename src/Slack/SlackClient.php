@@ -4,6 +4,7 @@ namespace App\Slack;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class SlackClient
 {
@@ -12,17 +13,23 @@ class SlackClient
      */
     private $guzzle;
 
-    public function __construct()
+    /**
+     * @var string
+     */
+    private $apiToken;
+
+    public function __construct(string $apiToken)
     {
         $this->guzzle = new Client([
-            'base_uri' => 'https://slack.com/api/'
+            'base_uri' => 'https://slack.com/api/',
         ]);
+        $this->apiToken = $apiToken;
     }
 
-    public function post(string $apiToken, string $endpoint, array $queryParams, array $body = null)
+    public function post(string $endpoint, array $queryParams, array $body = null): \stdClass
     {
         $query = array_merge(
-            ['token' => $apiToken,],
+            ['token' => $this->apiToken,],
             $queryParams
         );
 
@@ -34,6 +41,12 @@ class SlackClient
 
         $response = $this->guzzle->post($endpoint, $options);
 
-        return $response;
+        $body = \GuzzleHttp\json_decode($response->getBody()->getContents());
+
+        if (!$body->ok) {
+            throw new \RuntimeException($body->error);
+        }
+
+        return $body;
     }
 }

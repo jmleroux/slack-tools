@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Slack\FilesQuery;
 use App\Slack\SlackClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,17 +26,12 @@ class ListFilesCommand extends Command
         $channelId = $input->getArgument('channel');
         $userId = $input->getArgument('user');
 
-        $client = new SlackClient();
+        $client = new SlackClient($apiToken);
+        $query = new FilesQuery($client);
 
-        $response = $client->post(
-            $apiToken,
-            'files.list',
-            ['channel' => $channelId, 'user' => $userId],
-            null
-        );
-        $rawData = \GuzzleHttp\json_decode($response->getBody()->getContents());
+        $files = $query->list($channelId, $userId);
 
-        foreach ($rawData->files as $file) {
+        foreach ($files as $file) {
             $output->writeln(sprintf('%s - %s', $file->id, $file->name));
         }
     }

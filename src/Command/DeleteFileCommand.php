@@ -9,30 +9,26 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DeleteFilesCommand extends Command
+class DeleteFileCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('app:files:delete')
+        $this->setName('app:file:delete')
             ->addArgument('api_token', InputArgument::REQUIRED, 'Your API token')
-            ->addArgument('channel', InputArgument::REQUIRED, 'Channel ID')
-            ->addArgument('user', InputArgument::REQUIRED, 'User ID')
-            ->setDescription("Delete a user's files.");
+            ->addArgument('file_id', InputArgument::REQUIRED, 'File ID')
+            ->setDescription("Delete a file.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiToken = $input->getArgument('api_token');
-        $channelId = $input->getArgument('channel');
-        $userId = $input->getArgument('user');
+        $fileId = $input->getArgument('file_id');
 
         $client = new SlackClient($apiToken);
         $query = new FilesQuery($client);
 
-        $deleted = $query->deleteAll($channelId, $userId);
+        $fileId = $query->delete($fileId);
 
-        foreach ($deleted as $fileId) {
-            $output->writeln(sprintf('Deleted file ID = %s', $fileId));
-        }
+        $output->writeln(sprintf('Deleted file ID = %s', $fileId));
     }
 }

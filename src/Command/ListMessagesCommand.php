@@ -2,37 +2,39 @@
 
 namespace App\Command;
 
-use App\Slack\FilesQuery;
+use App\Slack\ChannelsQuery;
 use App\Slack\SlackClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DeleteFilesCommand extends Command
+class ListMessagesCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('app:files:delete')
+        $this->setName('app:channel:history')
             ->addArgument('api_token', InputArgument::REQUIRED, 'Your API token')
             ->addArgument('channel', InputArgument::REQUIRED, 'Channel ID')
-            ->addArgument('user', InputArgument::REQUIRED, 'User ID')
-            ->setDescription("Delete a user's files.");
+            ->setDescription("List channels.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiToken = $input->getArgument('api_token');
         $channelId = $input->getArgument('channel');
-        $userId = $input->getArgument('user');
-
         $client = new SlackClient($apiToken);
-        $query = new FilesQuery($client);
+        $query = new ChannelsQuery($client);
+        $messages = $query->history($channelId, 1000);
 
-        $deleted = $query->deleteAll($channelId, $userId);
-
-        foreach ($deleted as $fileId) {
-            $output->writeln(sprintf('Deleted file ID = %s', $fileId));
+        foreach($messages as $message) {
+            $output->write($message->ts);
+            $output->write(' - ');
+            if (isset($message->user)) {
+                $output->write($message->user);
+            }
+            $output->write(' - ');
+            $output->writeln($message->text);
         }
     }
 }
