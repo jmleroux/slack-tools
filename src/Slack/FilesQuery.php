@@ -1,11 +1,21 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 
-use Symfony\Component\Yaml\Exception\RuntimeException;
-
 class FilesQuery extends AbstractQuery
 {
+    /**
+     * List user's files in a channel
+     *
+     * @param string $channelId
+     * @param string $userId
+     *
+     * @return \stdClass[]
+     */
     public function list(string $channelId, string $userId): array
     {
         $response = $this->client->post(
@@ -19,6 +29,14 @@ class FilesQuery extends AbstractQuery
         return $files;
     }
 
+    /**
+     * Delete all user'sfiles (with limit) in a channel
+     *
+     * @param string $channelId
+     * @param string $userId
+     *
+     * @return string[]
+     */
     public function deleteAll(string $channelId, string $userId): array
     {
         $files = $this->list($channelId, $userId);
@@ -31,6 +49,13 @@ class FilesQuery extends AbstractQuery
         return $deleted;
     }
 
+    /**
+     * Delete one file
+     *
+     * @param string $fileId
+     *
+     * @return string
+     */
     public function delete(string $fileId): string
     {
         $this->client->post(

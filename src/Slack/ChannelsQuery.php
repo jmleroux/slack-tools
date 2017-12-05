@@ -1,4 +1,8 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 
@@ -15,6 +19,11 @@ class ChannelsQuery extends AbstractQuery
         $this->users = new UsersQuery($client);
     }
 
+    /**
+     * List channels
+     *
+     * @return \stdClass[]
+     */
     public function list(): array
     {
         $response = $this->client->post(
@@ -26,14 +35,38 @@ class ChannelsQuery extends AbstractQuery
         return $response->channels;
     }
 
-    public function history(string $channelId, int $count = 100): array
+    /**
+     * List all private discussions
+     *
+     * @return \stdClass[]
+     */
+    public function listPrivate(): array
+    {
+        $response = $this->client->post(
+            'im.list',
+            [],
+            null
+        );
+
+        return $response->ims;
+    }
+
+    /**
+     * List all messages of a channel
+     *
+     * @param string $channelId
+     * @param int    $limit
+     *
+     * @return \stdClass[]
+     */
+    public function history(string $channelId, int $limit = 100): array
     {
         try {
             $response = $this->client->post(
                 'channels.history',
                 [
                     'channel' => $channelId,
-                    'count' => $count,
+                    'count'   => $limit,
                 ],
                 null
             );
@@ -42,7 +75,7 @@ class ChannelsQuery extends AbstractQuery
                 'im.history',
                 [
                     'channel' => $channelId,
-                    'count' => $count,
+                    'count'   => $limit,
                 ],
                 null
             );

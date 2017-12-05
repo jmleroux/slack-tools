@@ -1,10 +1,13 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class SlackClient
 {
@@ -14,6 +17,9 @@ class SlackClient
     private $guzzle;
 
     /**
+     * Legacy token
+     * @see https://api.slack.com/custom-integrations/legacy-tokens
+     *
      * @var string
      */
     private $apiToken;

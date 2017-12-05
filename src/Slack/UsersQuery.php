@@ -1,4 +1,8 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 
@@ -6,6 +10,13 @@ class UsersQuery extends AbstractQuery
 {
     const CACHE_USER_INFO = 'user.%s';
 
+    /**
+     * Find user's info
+     *
+     * @param string $userId
+     *
+     * @return \stdClass
+     */
     public function info(string $userId): \stdClass
     {
         $cacheKey = sprintf(self::CACHE_USER_INFO, $userId);

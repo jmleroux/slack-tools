@@ -1,4 +1,8 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 

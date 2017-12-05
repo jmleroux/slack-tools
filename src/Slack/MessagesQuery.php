@@ -1,28 +1,29 @@
 <?php
+/**
+ * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @license MIT
+ */
 
 namespace App\Slack;
 
 class MessagesQuery extends AbstractQuery
 {
     /**
-     * @var UsersQuery
+     * List all messages (with limit) in a channel
+     *
+     * @param string $channelId
+     * @param int    $limit
+     *
+     * @return \stdClass[]
      */
-    private $users;
-
-    public function __construct(SlackClient $client)
-    {
-        parent::__construct($client);
-        $this->users = new UsersQuery($client);
-    }
-
-    public function list(string $channelId, int $count = 100): array
+    public function list(string $channelId, int $limit = 100): array
     {
         try {
             $response = $this->client->post(
                 'channels.history',
                 [
                     'channel' => $channelId,
-                    'count' => $count,
+                    'count' => $limit,
                 ],
                 null
             );
@@ -31,7 +32,7 @@ class MessagesQuery extends AbstractQuery
                 'im.history',
                 [
                     'channel' => $channelId,
-                    'count' => $count,
+                    'count' => $limit,
                 ],
                 null
             );
@@ -40,7 +41,16 @@ class MessagesQuery extends AbstractQuery
         return $response->messages;
     }
 
-    public function deleteAll(string $channelId, string $userId, int $count = 100): array
+    /**
+     * Delete all user's messages (with limit) in a channel
+     *
+     * @param string $channelId
+     * @param string $userId
+     * @param int    $limit
+     *
+     * @return \stdClass[]
+     */
+    public function deleteAll(string $channelId, string $userId, int $limit = 100): array
     {
         $messages = array_reverse($this->list($channelId, 1000));
 
@@ -49,7 +59,7 @@ class MessagesQuery extends AbstractQuery
             if ($message->user === $userId) {
                 $deleted[] = $this->delete($channelId, $message->ts);
             }
-            if (count($deleted) >= $count) {
+            if (count($deleted) >= $limit) {
                 break;
             }
         }
@@ -57,6 +67,14 @@ class MessagesQuery extends AbstractQuery
         return $deleted;
     }
 
+    /**
+     * Delete one message in a channel
+     *
+     * @param $channelId
+     * @param $ts
+     *
+     * @return string
+     */
     public function delete($channelId, $ts): string
     {
         $this->client->post(
