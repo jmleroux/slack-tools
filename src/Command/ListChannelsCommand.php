@@ -29,7 +29,7 @@ class ListChannelsCommand extends Command
         $query = new ChannelsQuery($client);
         $channels = $query->list();
 
-        foreach($channels as $channel) {
+        foreach ($channels as $channel) {
             $output->write($channel->id);
             $output->write(' - ');
             if ($channel->is_archived) {

@@ -31,7 +31,7 @@ class ListMessagesCommand extends Command
         $query = new ChannelsQuery($client);
         $messages = $query->history($channelId, 1000);
 
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
             $output->write($message->ts);
             $output->write(' - ');
             if (isset($message->user)) {
