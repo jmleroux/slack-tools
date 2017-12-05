@@ -1,8 +1,7 @@
 # slack-tools
 Slack tools Symfony 4 application
 
-[![Build Status](https://travis-ci.org/jmleroux/slack-tools.svg?branch=master)]
-(https://travis-ci.org/jmleroux/slack-tools)
+[![Build Status](https://travis-ci.org/jmleroux/slack-tools.svg?branch=master)](https://travis-ci.org/jmleroux/slack-tools)
 
 ### List Instant messages
 
