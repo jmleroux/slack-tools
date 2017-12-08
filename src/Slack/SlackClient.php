@@ -6,6 +6,7 @@
 
 namespace App\Slack;
 
+use App\Exception\SlackApiErrorException;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 
@@ -50,7 +51,7 @@ class SlackClient
         $body = \GuzzleHttp\json_decode($response->getBody()->getContents());
 
         if (!$body->ok) {
-            throw new \RuntimeException($body->error);
+            throw new SlackApiErrorException($body->error);
         }
 
         return $body;

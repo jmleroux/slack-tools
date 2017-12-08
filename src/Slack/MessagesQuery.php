@@ -6,6 +6,8 @@
 
 namespace App\Slack;
 
+use App\Exception\SlackApiErrorException;
+
 class MessagesQuery extends AbstractQuery
 {
     /**
@@ -27,7 +29,7 @@ class MessagesQuery extends AbstractQuery
                 ],
                 null
             );
-        } catch (\RuntimeException $e) {
+        } catch (SlackApiErrorException $e) {
             $response = $this->client->post(
                 'im.history',
                 [

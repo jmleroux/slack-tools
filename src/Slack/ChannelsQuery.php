@@ -1,24 +1,15 @@
 <?php
 /**
- * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @author  JM Leroux <jmleroux.pro@gmail.com>
  * @license MIT
  */
 
 namespace App\Slack;
 
+use App\Exception\ChannelNotFoundException;
+
 class ChannelsQuery extends AbstractQuery
 {
-    /**
-     * @var UsersQuery
-     */
-    private $users;
-
-    public function __construct(SlackClient $client)
-    {
-        parent::__construct($client);
-        $this->users = new UsersQuery($client);
-    }
-
     /**
      * List channels
      *
@@ -52,35 +43,24 @@ class ChannelsQuery extends AbstractQuery
     }
 
     /**
-     * List all messages of a channel
+     * @param \stdClass[] $channels
+     * @param string      $name
      *
-     * @param string $channelId
-     * @param int    $limit
-     *
-     * @return \stdClass[]
+     * @return \stdClass|null
      */
-    public function history(string $channelId, int $limit = 100): array
+    public function filterByName(array $channels, string $name)
     {
-        try {
-            $response = $this->client->post(
-                'channels.history',
-                [
-                    'channel' => $channelId,
-                    'count'   => $limit,
-                ],
-                null
-            );
-        } catch (\RuntimeException $e) {
-            $response = $this->client->post(
-                'im.history',
-                [
-                    'channel' => $channelId,
-                    'count'   => $limit,
-                ],
-                null
-            );
+        $channel = array_filter($channels, function (\stdClass $channel) use ($name) {
+            return $channel->name == $name;
+        });
+
+        if (count($channel) === 0) {
+            return null;
+        }
+        if (count($channel) !== 1) {
+            throw new ChannelNotFoundException($name);
         }
 
-        return $response->messages;
+        return reset($channel);
     }
 }
