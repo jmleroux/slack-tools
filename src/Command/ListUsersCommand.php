@@ -42,6 +42,5 @@ class ListUsersCommand extends Command
             ['User ID', 'User Name', 'Is BOT'],
             $data
         );
-
     }
 }
