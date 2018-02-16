@@ -18,4 +18,4 @@ install:
     - composer install --prefer-dist --no-interaction --no-scripts
 
 script:
-    - ./vendor/bin/php-cs-fixer --rules=@PSR2 --dry-run -v fix src
+    - ./vendor/bin/php-cs-fixer --rules=@PSR2 --dry-run --diff -v fix src
