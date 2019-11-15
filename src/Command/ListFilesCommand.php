@@ -21,7 +21,7 @@ class ListFilesCommand extends Command
             ->addArgument('api_token', InputArgument::REQUIRED, 'Your API token')
             ->addArgument('channel', InputArgument::REQUIRED, 'Channel ID')
             ->addArgument('user', InputArgument::REQUIRED, 'User ID')
-            ->setDescription("List files a user's files.");
+            ->setDescription("List user's files a channel");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

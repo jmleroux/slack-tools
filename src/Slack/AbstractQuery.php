@@ -11,6 +11,8 @@ use Symfony\Component\Cache\Simple\PhpFilesCache;
 
 class AbstractQuery
 {
+    const API_RATE_LIMIT = 30;
+
     /**
      * @var CacheInterface
      */

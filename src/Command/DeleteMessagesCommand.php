@@ -22,7 +22,7 @@ class DeleteMessagesCommand extends Command
             ->addArgument('channel', InputArgument::REQUIRED, 'Channel ID')
             ->addArgument('user', InputArgument::REQUIRED, 'User ID')
             ->addArgument('count', InputArgument::OPTIONAL, 'Max number of messages to delete.', 100)
-            ->setDescription("Delete a message.");
+            ->setDescription("Delete all user's messages in a channel.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -30,7 +30,7 @@ class DeleteMessagesCommand extends Command
         $apiToken = $input->getArgument('api_token');
         $channelId = $input->getArgument('channel');
         $userId = $input->getArgument('user');
-        $count = $input->getArgument('count');
+        $count = (int) $input->getArgument('count');
 
         $client = new SlackClient($apiToken);
         $query = new MessagesQuery($client);
@@ -40,5 +40,6 @@ class DeleteMessagesCommand extends Command
         foreach ($deleted as $messageTs) {
             $output->writeln(sprintf('Deleted message TS = %s', $messageTs));
         }
+        $output->writeln(sprintf('Deleted messages count = %d', count($deleted)));
     }
 }

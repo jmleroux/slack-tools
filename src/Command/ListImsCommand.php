@@ -21,7 +21,7 @@ class ListImsCommand extends Command
     {
         $this->setName('app:channels:list-private')
             ->addArgument('api_token', InputArgument::REQUIRED, 'Your API token')
-            ->setDescription("List a user's files.");
+            ->setDescription("List a user's private channels.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

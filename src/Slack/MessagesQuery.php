@@ -1,12 +1,13 @@
 <?php
 /**
- * @author JM Leroux <jmleroux.pro@gmail.com>
+ * @author  JM Leroux <jmleroux.pro@gmail.com>
  * @license MIT
  */
 
 namespace App\Slack;
 
 use App\Exception\SlackApiErrorException;
+use GuzzleHttp\Exception\RequestException;
 
 class MessagesQuery extends AbstractQuery
 {
@@ -25,7 +26,7 @@ class MessagesQuery extends AbstractQuery
                 'channels.history',
                 [
                     'channel' => $channelId,
-                    'count' => $limit,
+                    'count'   => $limit,
                 ],
                 null
             );
@@ -34,7 +35,7 @@ class MessagesQuery extends AbstractQuery
                 'im.history',
                 [
                     'channel' => $channelId,
-                    'count' => $limit,
+                    'count'   => $limit,
                 ],
                 null
             );
@@ -58,11 +59,26 @@ class MessagesQuery extends AbstractQuery
 
         $deleted = [];
         foreach ($messages as $message) {
-            if ($message->user === $userId) {
-                $deleted[] = $this->delete($channelId, $message->ts);
-            }
-            if (count($deleted) >= $limit) {
+            try {
+                // TODO: to improve
+                if (!isset($message->user)) {
+                    continue;
+                }
+                if ($message->user === $userId) {
+                    $deleted[] = $this->delete($channelId, $message->ts);
+                }
+                if (count($deleted) >= $limit) {
+                    break;
+                }
+            } catch (SlackApiErrorException $e) {
                 break;
+            } catch (RequestException $e) {
+                if (429 === $e->getCode()) {
+                    $halt = (int) $e->getResponse()->getHeader('Retry-After')[0];
+                    sleep($halt + 1);
+                } else {
+                    throw new SlackApiErrorException($e->getMessage());
+                }
             }
         }
 
